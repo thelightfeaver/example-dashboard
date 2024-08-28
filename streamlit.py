@@ -23,8 +23,8 @@ total_productos = df["quantity"].sum()
 
 # Mostrar KPIs
 col1, col2 = st.columns(2)
-col1.metric("Total Ventas", f"${total_ventas:,.2f}")
-col2.metric("Total Productos", total_productos)
+col1.metric("Total Ventas", f"${total_ventas:,.2f}", "dólares")
+col2.metric("Total Productos", total_productos, "productos")
 
 
 # Mostrar tabla de datos
@@ -42,7 +42,7 @@ fig = px.bar(
     color="product line",
     labels={"product line": "Producto", "total": "Total"},
 )
-col1c.plotly_chart(fig)
+col1c.plotly_chart(fig, use_container_width=True)
 
 # Mostrar ventas por género
 
@@ -54,20 +54,25 @@ fig = px.pie(
     title="Ventas por Género",
     hole=0.5,
 )
-col2c.plotly_chart(fig)
+col2c.plotly_chart(fig, use_container_width=True)
 
 # Mostrar ventas por ciudad
 
 ventas_por_ciudad = df.groupby("city")["total"].sum().reset_index()
-fig = px.bar(
-    ventas_por_ciudad,
-    x="city",
-    y="total",
-    title="Ventas por Ciudad",
-    color="city",
-    labels={"city": "Ciudad", "total": "Total"},
+fig = px.scatter_mapbox(
+  ventas_por_ciudad,
+  lat=[21.97, 19.75, 16.80] ,
+  lon=[96.08,96.13,96.15],
+  hover_name="city",
+  size="total",
+  color="total",
+  color_continuous_scale=px.colors.sequential.Viridis,
+  zoom=3,
+  title="Ventas por Ciudad",
+  labels={"total": "Total"},
 )
-st.plotly_chart(fig)
+fig.update_layout(mapbox_style="open-street-map")
+st.plotly_chart(fig, use_container_width=True)
 
 # Mostrar ventas por mes
 ventas_por_mes = df.groupby("date")["total"].sum().reset_index()
@@ -78,4 +83,4 @@ fig = px.line(
     title="Ventas por Mes",
     labels={"date": "Fecha", "total": "Total"},
 )
-st.plotly_chart(fig)
+st.plotly_chart(fig, use_container_width=True)
