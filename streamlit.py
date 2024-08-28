@@ -1,43 +1,38 @@
 import streamlit as st
 import pandas as pd
+
 import plotly.express as px
 
-
+# Configuración de la página
 st.set_page_config(
     page_title="Dashboard Informativo",
     page_icon=":bar_chart:",
     layout="wide",
     initial_sidebar_state="auto",
 )
+
+# Título del dashboard
 st.title(":bar_chart: Dashboard Ventas")
 
 # Cargar datos
 df = pd.read_csv("./supermarket_sales_clean.csv")
 
-# kpi
-total_ventas = int(df["total"].sum())
+# KPIs
+total_ventas = df["total"].sum()
 total_productos = df["quantity"].sum()
 
-# crear columnas
+# Mostrar KPIs
 col1, col2 = st.columns(2)
-
-# mostrar kpi
-with col1:
-    st.metric("Total Ventas", f"${total_ventas:,.2f}")
-
-with col2:
-    st.metric("Total Productos", total_productos)
+col1.metric("Total Ventas", f"${total_ventas:,.2f}")
+col2.metric("Total Productos", total_productos)
 
 
-# mostrar ventas por producto
-st.title("Ventas por Producto")
+# Mostrar tabla de datos
+
+col1c, col2c = st.columns(2)
+# Mostrar ventas por producto
+
 ventas_por_producto = df.groupby("product line")["total"].sum().reset_index()
-ventas_por_genero = df.groupby("gender")["total"].sum().reset_index()
-ventas_por_ciudad = df.groupby("city")["total"].sum().reset_index()
-ventas_por_mes = df.groupby("date")["total"].sum().reset_index()
-
-
-
 fig = px.bar(
     ventas_por_producto,
     y="product line",
@@ -47,21 +42,23 @@ fig = px.bar(
     color="product line",
     labels={"product line": "Producto", "total": "Total"},
 )
-st.plotly_chart(fig)
+col1c.plotly_chart(fig)
 
-# mostrar ventas por genero
-st.title("Ventas por Genero")
+# Mostrar ventas por género
+
+ventas_por_genero = df.groupby("gender")["total"].sum().reset_index()
 fig = px.pie(
     ventas_por_genero,
     values="total",
-    names=df["gender"].unique(),
-    title="Ventas por Genero",
+    names="gender",
+    title="Ventas por Género",
     hole=0.5,
 )
-st.plotly_chart(fig)
+col2c.plotly_chart(fig)
 
-# mostrar ventas por ciudad
-st.title("Ventas por Ciudad")
+# Mostrar ventas por ciudad
+
+ventas_por_ciudad = df.groupby("city")["total"].sum().reset_index()
 fig = px.bar(
     ventas_por_ciudad,
     x="city",
@@ -72,8 +69,8 @@ fig = px.bar(
 )
 st.plotly_chart(fig)
 
-# mostrar ventas por mes
-st.title("Ventas por Mes")
+# Mostrar ventas por mes
+ventas_por_mes = df.groupby("date")["total"].sum().reset_index()
 fig = px.line(
     ventas_por_mes,
     x="date",
