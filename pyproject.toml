@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "example-dashboard"
+version = "0.1.0"
+description = ""
+authors = ["thelightfeaver <diogenes_mj@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.2.2"
+numpy = "^2.1.0"
+plotly = "^5.23.0"
+streamlit = "^1.38.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
